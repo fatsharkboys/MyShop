@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://mybatis.org/schema/mybatis-spring
+       https://mybatis.org/schema/mybatis-spring.xsd">
+
+    <!-- 扫描service相关的bean -->
+    <context:scan base-package="com.FatShark.Service"/>
+
+<!--    BookServiceImpl注入到IOC容器中-->
+    <bean id="userService" class="com.FatShark.service.impl.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="orderService" class="com.FatShark.service.impl.OrderServiceImpl">
+        <property name="orderDao" ref="orderDao"/>
+    </bean>
+    <bean id="projectService" class="com.FatShark.service.impl.ProjectServiceImpl">
+        <property name="projectDao" ref="projectDao"/>
+    </bean>
+    <bean id="shopService" class="com.FatShark.service.impl.ShopServiceImpl">
+        <property name="shopDao" ref="shopDao"/>
+    </bean>
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 注入数据库连接池 -->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+</beans>

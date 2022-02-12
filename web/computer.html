@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns: xmlns:>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>商品信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+</head>
+<body>
+<div class="layui-fluid">
+    <fieldset class="table-search-fieldset" style="border: 0">
+        <legend style="display: none">搜索信息</legend>
+        <div style="margin: 10px 10px 10px 10px" id="btn">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商品名</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" name="keyword" id="demoReload" required lay-verify="required"
+                                   autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="button" class="layui-btn layui-btn-primary" lay-submit data-type="reload"
+                                lay-filter="data-search-btn"><i class="layui-icon layui-icon-search"></i> 搜 索
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+    <!--注意此处table标签里的id-->
+    <table class="layui-table layui-hide" id="testReload" lay-filter="project"></table>
+</div>
+<script type="text/html" id="Demo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit" style="margin-bottom: 10px;padding:0 5px">购买</a>
+    <a class="layui-btn layui-bg-blue layui-btn-xs" lay-event="del"
+       style="margin-bottom: 10px;padding:0 5px">查看好评率</a>
+</script>
+
+<script src="layui/layui.js"></script>
+<script>
+    layui.use(['table', 'layer'], function () {
+        let table = layui.table;
+        table.render({
+            elem: '#testReload'
+            , url: '/project/queryByComputer'
+            , method: "post"
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: 'ID', width: 160, sort: true,}
+                , {field: 'projectName', title: '商品名', width: 160}
+                , {field: 'projectKind', title: '商品种类', width: 160}
+                , {field: 'projectPrice', title: '价格', width: 160}
+                , {field: 'projectInfo', title: '描述', width: 320}
+                , {field: 'center', title: '操作', width: 300, toolbar: "#Demo"}
+            ]],
+            page: {
+                layout: ['prev', 'page', 'next', 'count', 'limit', 'refresh', 'skip'],
+                limit: 10,
+                limits: [5, 10, 15],
+                group: 10,
+                first: false,
+                last: false
+            }
+        });
+        let $ = layui.$,
+            active = {
+                reload: function () {
+                    let demoReload = $('#demoReload');
+                    table.reload('testReload', {
+                        url: "/project/queryByProjectName",
+                        methods: "post",
+                        page: {
+                            curr: 1
+                        },
+                        where: {
+                            projectName: demoReload.val()
+                        }
+                    });
+                }
+            };
+
+        $('#btn .layui-btn').on('click', function () {
+            let type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+
+
+    layui.use(['layer', 'table', 'form'], function () {
+        let layer = layui.layer;
+        let table = layui.table;
+        let $ = layui.$;
+        table.on('tool(project)', function (obj) {
+            let data = obj.data;
+            let orderID = sessionStorage.getItem("id");
+            if (obj.event === 'edit') {
+                $.post({
+                    url: "/order/putOrder",
+                    data: {
+                        "id": data.id,
+                        "orderID": orderID
+                    },
+                    type: "post",
+                    success: function (map) {
+                        if (map.data != null) {
+                            layer.msg("加入购物车成功", {icon: 6})
+                        } else {
+                            layer.msg("购买失败，请重试", {icon: 5})
+                        }
+                    }
+                })
+            } else if (obj.event === 'del') {
+                layui.use("layer", function () {
+                    let layer = layui.layer
+                    layer.msg("100%的好评率");
+                })
+            }
+        })
+        table.reload({
+            url: "/admin/ProjectAll"
+        })
+    })
+</script>
+</body>
+</html>

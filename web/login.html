@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!--//TODO 替换所有cdn引入的layui的css和layui的js-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>登录界面</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+    <style type="text/css">
+        body {
+            background-image: url("img/pexels-mateusz-dach-450035.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .Login {
+            width: 480px;
+            height: 320px;
+            min-height: 320px;
+            max-height: 320px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 130;
+            background-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 3px 18px rgba(100, 0, 0, .5);
+            font-size: 16px;
+        }
+
+        .layui-input-block {
+            margin-top: 15px;
+            width: 300px;
+            height: 40px;
+            font-size: 15px;
+        }
+
+        .layui-form-item {
+            margin-top: 5px;
+            margin-left: -20px;
+        }
+
+        button {
+            margin-left: 20px;
+        }
+
+        #logo-id {
+            margin-top: -16px;
+            padding-left: 150px;
+            padding-bottom: 15px;
+        }
+
+    </style>
+</head>
+<body>
+<form class="layui-form" method="post" action="/a1">
+    <div class="Login">
+        <div class="layui-form-item">
+            <img src="img/20201105112337285.png" style="height: 25%;width:40% " id="logo-id">
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><i class="layui-icon layui-icon-username"
+                                               style="font-size: 30px; color: #1E9FFF;"></i> </label>
+            <div class="layui-input-block">
+                <input type="text" name="username" lay-verify="username" placeholder="请输入用户名" autocomplete="off"
+                       class="layui-input"
+                       required>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"><i class="layui-icon layui-icon-password"
+                                               style="font-size: 30px; color: #1E9FFF;"></i> </label>
+            <div class="layui-input-block">
+                <input type="password" name="password" lay-verify="password" placeholder="请输入密码" autocomplete="off"
+                       class="layui-input"
+                       required>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <input type="radio" name="level" value="3" title="顾客" required>
+                <input type="radio" name="level" value="2" title="商户" required>
+                <input type="radio" name="level" value="1" title="超级管理员" required>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-filter="formDemo" lay-submit>登录</button>
+                <button type="reset" class="layui-btn layui-btn-primary layui-bg-red">重置</button>
+                <button class="layui-btn layui-btn-primary layui-bg-blue" type="button" id="btn2" onclick="x2()">注册
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script src="layui/layui.js"></script>
+
+<script>
+    layui.use(['form', "layer"], function () {
+        let form = layui.form;
+        let layer = layui.layer;
+        let $ = layui.$;
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            $.ajax({
+                url: "/a1",
+                data: {
+                    "username": data.field.username,
+                    "password": data.field.password,
+                    "level": data.field.level
+                },
+                type: "post",
+                success: function (map) {
+                    if (map.data != null) {
+                        layer.msg("登陆成功", {icon: 1, offset: '100px', time: 2000}, function () {
+                                if (map.data.level === 1) {
+                                    sessionStorage.setItem("id", map.data.id);
+                                    window.location.href = "Admin.html"
+                                } else if (map.data.level === 2) {
+                                    sessionStorage.setItem("id", map.data.id);
+                                    window.location.href = "main3.html"
+                                } else if (map.data.level === 3) {
+                                    sessionStorage.setItem("id", map.data.id);
+                                    window.location.href = "main2.html"
+                                }
+                            }
+                        );
+                    } else {
+                        if (data.field.username != null && data.field.password != null && data.field.level != null) {
+                            layer.msg("用户名，密码或权限错误", {icon: 0, offset: '100px'});
+                        } else {
+                            layer.msg("请填写完整的登陆信息", {icon: 0, offset: '100px'})
+                        }
+                    }
+                }
+            })
+            return false;
+        });
+    });
+
+    function x2() {
+        layer.msg("欢迎新用户的加盟", {icon: 6, offset: '100px'}, function () {
+            window.location.href = "register.html"
+        })
+    }
+</script>
+<script src="js/jquery-3.6.0.js"></script>
+</body>
+</html>

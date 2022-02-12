@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>修改订单信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+</head>
+<body>
+<form class="layui-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">订单编号</label>
+        <div class="layui-input-block">
+            <input type="text" name="id" lay-verify="required" id="inp1" placeholder="请输入新的订单编号" autocomplete="off"
+                   class="layui-input"
+                   required readonly>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">支付状态</label>
+        <div class="layui-input-block">
+            <select name="pay" lay-verify="required">
+                <option value="1">已支付</option>
+                <option value="2">未支付</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">支付状态</label>
+        <div class="layui-input-block">
+            <select name="send2" lay-verify="required">
+                <option value="1">已送达</option>
+                <option value="2">未签收</option>
+                <option value="3">已签收</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-filter="formDemo" lay-submit>修改</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+</body>
+<script src="layui/layui.js"></script>
+<script>
+    layui.use(['form', "layer"], function () {
+        let form = layui.form;
+        let layer = layui.layer;
+        let $ = layui.$;
+        form.on('submit(formDemo)', function (data) {
+            $.ajax({
+                url: "/order/updateOrder",
+                data: {
+                    "id": data.field.id,
+                    "pay": data.field.pay,
+                    "send": data.field.send2,
+                },
+                type: "post",
+                success: function (map) {
+                    if (map.data != null) {
+                        layer.msg("修改订单信息成功", {icon: 6}, function () {
+                            let index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            parent.location.reload();
+                        })
+                    } else {
+                        layer.msg("修改失败", {icon: 5})
+                    }
+                }
+            })
+            return false;
+        });
+    });
+</script>
+</html>

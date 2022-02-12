@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>二手市场</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo layui-hide-xs layui-bg-black "
+             style="background-image: url('/img/R-C.jpg');background-repeat: no-repeat;background-size: cover">
+        </div>
+        <div class="layui-logo layui-hide-xs layui-bg-black"
+             style="margin-left: 200px;width: 100%;font-size: 45px;font-family: 华文楷体">二手交易市场后台管理系统
+        </div>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item layui-hide layui-show-md-inline-block" style="margin-right: 15px">
+                <a href="javascript:;">
+                    <img src="//tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"
+                         class="layui-nav-img">
+                    超级管理员
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="javascript:click5();">个人信息</a></dd>
+                    <dd><a href="javascript:click6();">修改密码</a></dd>
+                    <dd><a href="javascript:click4()">注销</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a>用户管理</a>
+                    <dl class="layui-nav-child">
+                        <dd id="d1"><a href="javascript:click();">查询用户</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a>商户管理</a>
+                    <dl class="layui-nav-child">
+                        <dd id="d2"><a href="javascript:click1();">查询商户</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a>货物管理</a>
+                    <dl class="layui-nav-child">
+                        <dd id="d3"><a href="javascript:click2();">查看货物</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a>订单管理</a>
+                    <dl class="layui-nav-child">
+                        <dd id="d4"><a href="javascript:click3();">查看订单</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item" id="d5"><a href="javascript:click7()">查看公告</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body" style="width: 100%; height: 100%">
+        <iframe id="option" name="option" style="overflow: visible;" scrolling="no"
+                width="100%" height="100%" src="showUserInfo.html"></iframe>
+    </div>
+
+
+    <div class="layui-footer">
+        <p align="center">鲨鱼出品，必属精品</p>
+    </div>
+</div>
+<script src="layui/layui.js"></script>
+<script>
+    layui.use(['element', 'layer', 'util'], function () {
+        let element = layui.element
+            , layer = layui.layer
+            , util = layui.util
+            , $ = layui.$;
+
+        util.event('lay-header-event', {
+            menuLeft: function () {
+                layer.msg('展开左侧菜单的操作', {icon: 0});
+            }
+        });
+    });
+
+
+    function click() {
+        $("#option").attr("src", "showUserInfo.html");
+    }
+
+    function click1() {
+        $("#option").attr("src", "showShopInfo.html");
+    }
+
+    function click3() {
+        $("#option").attr("src", "order.html");
+
+    }
+
+    function click2() {
+        $("#option").attr("src", "showProjectInfo.html");
+    }
+
+    function click4() {
+        sessionStorage.removeItem("id");
+        if (sessionStorage != null) {
+            layer.msg("注销成功", {icon: 6}, function () {
+                window.location.href = "main.html";
+            })
+        } else {
+            layer.msg("注销失败", {icon: 5})
+        }
+    }
+
+    function click5() {
+        layui.use("layer", function () {
+            layer.open({
+                type: 2,
+                title: "个人信息",
+                shade: 0.5,
+                maxmin: true,
+                anim: 3,
+                area: ['700px', '500px'],
+                content: "PeopleInfo.html"
+            })
+        })
+    }
+
+    function click6() {
+        layui.use("layer", function () {
+            let layer = layui.layer
+            layer.open({
+                type: 2,
+                title: "修改密码",
+                shade: 0.5,
+                maxmin: true,
+                anim: 3,
+                area: ['500px', '300px'],
+                content: "updatePassword.html"
+            })
+        })
+    }
+
+    function click7() {
+        layui.use("layer", function () {
+            let layer = layui.layer
+            layer.open({
+                type: 2,
+                title: "公告",
+                shade: 0.5,
+                maxmin: true,
+                anim: 3,
+                area: ['600px', '400px'],
+                content: "advice.html"
+            })
+        })
+    }
+</script>
+<script src="js/jquery-3.6.0.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>我的购物车</title>
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+</head>
+<body>
+<table class="layui-table layui-hide" id="testReload" lay-filter="order"></table>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">购买</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除该订单</a>
+</script>
+<script src="/layui/layui.js"></script>
+<script>
+    layui.use(['table', 'layer'], function () {
+        let table = layui.table;
+        let id = sessionStorage.getItem("id")
+        table.render({
+            elem: '#testReload'
+            , height: 312
+            , url: '/order/queryByUserID?id=' + id
+            , type: "post"
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: 'ID', width: 120, sort: true}
+                , {
+                    field: 'projectName', title: '商品名', width: 120, templet: function (data) {
+                        return data.project.projectName;
+                    }
+                }
+                , {
+                    field: 'projectPrice', title: '商品单价', width: 120, templet: function (data) {
+                        return data.project.projectPrice
+                    }
+                }
+                , {
+                    field: 'PayMoney', title: '应付金额', width: 120, templet: function (data) {
+                        return data.project.projectPrice
+                    }
+                }
+                , {
+                    field: 'username', title: '收货人', width: 120, templet: function (data) {
+                        return data.user.username;
+                    }
+                }
+                , {
+                    field: 'phone', title: '收货人联系方式', width: 180, templet: function (data) {
+                        return data.user.phone;
+                    }
+                }
+                , {
+                    field: 'address', title: '收货人地址', width: 120, templet: function (data) {
+                        return data.user.address;
+                    }
+                }
+                , {
+                    field: 'pay', title: '支付状态', width: 120, templet: function (data) {
+                        if (data.pay === 1) {
+                            return "已支付";
+                        } else {
+                            return "未支付";
+                        }
+                    }
+                }
+                , {
+                    field: 'pay', title: '物流状态', width: 120, templet: function (data) {
+                        if (data.send === 1) {
+                            return "已送达";
+                        } else if (data.send === 2) {
+                            return "未签收";
+                        } else {
+                            return "已签收"
+                        }
+                    }
+                }
+                , {field: 'center', title: '操作', width: 300, toolbar: "#barDemo"}
+            ]]
+            , page: {
+                layout: ['prev', 'page', 'next', 'count', 'limit', 'refresh', 'skip'],
+                limit: 5,
+                limits: [5, 10, 15],
+                group: 10,
+                first: false,
+                last: false
+            }
+        });
+    });
+    layui.use(['layer', 'table', 'form'], function () {
+        let layer = layui.layer;
+        let table = layui.table;
+        let $ = layui.$;
+        table.on('tool(order)', function (obj) {
+            let data = obj.data;
+            let pay = 1;
+            let send = 1;
+            console.log(data.id + pay + send)
+            if (obj.event === 'edit') {
+                $.post({
+                    url: "/order/updateOrder2?id=" + sessionStorage.getItem("id"),
+                    data: {"pay": pay, "send": send},
+                    type: "post",
+                    success: function (map) {
+                        if (map.data != null) {
+                            layer.msg("购买成功,欢迎下次再来", {icon: 6}, function () {
+                                $.post({
+                                    url: "/order/delOrder",
+                                    data: {"id": data.id},
+                                })
+                                table.reload('testReload', {
+                                    url: "/order/queryByUserID?id=" + sessionStorage.getItem("id")
+                                })
+                            })
+                        } else {
+                            layer.msg("购买失败", {icon: 5})
+                        }
+                    }
+                })
+
+            } else if (obj.event === 'del') {
+                layer.confirm("确认要删除吗？", function () {
+                    $.post({
+                        url: "/order/delOrder",
+                        data: {"id": data.id},
+                        success: function (map) {
+                            let message = map.message;
+                            layer.msg(message, {icon: 1});
+                        }
+                    })
+                    table.reload('testReload', {
+                        url: "/order/queryByUserID?id=" + sessionStorage.getItem("id")
+                    })
+                })
+            }
+        })
+    })
+</script>
+</body>
+</html>

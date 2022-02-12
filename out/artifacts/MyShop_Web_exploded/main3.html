@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>二手交易市场</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="main3.html">交易市场</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="main3.html">首页</a></li>
+                <li><a href="javascript:checkPhone2()">手机类</a></li>
+                <li><a href="javascript: checkComputer2()">电脑类</a></li>
+            </ul>
+            <ul class="nav navbar-nav" style="float: right;">
+                <li><a href="javascript:showPeople2()">个人信息</a></li>
+                <li><a href="javascript:showProject()">店铺好货</a></li>
+                <li><a href="javascript:addProject()">添加货物</a></li>
+                <li><a href="javascript:car2()">购物车</a></li>
+                <li><a href="javascript:quit2()">注销</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="row" style="width: 100%;height: 800px">
+    <div class="col-sm-12" style="width: 100%;height: 100%">
+        <iframe id="option" name="option" style="overflow: visible;" scrolling="no"
+                width="100%" height="100%" src="main4.html"></iframe>
+    </div>
+</div>
+<div class="text-center" style="margin-bottom:0;background-color: #2D93CA">
+    <p>鲨鱼出品，必属精品</p>
+</div>
+<script src="layui/layui.js"></script>
+<script>
+    function addProject() {
+        layui.use("layer", function () {
+            layui.use("layer", function () {
+                layer.open({
+                    type: 2,
+                    title: "添加货物",
+                    shade: 0.5,
+                    maxmin: true,
+                    anim: 3,
+                    area: ['700px', '500px'],
+                    content: "addProject.html"
+                })
+            })
+        })
+    }
+
+    function checkPhone2() {
+        $("#option").attr("src", "phone.html")
+    }
+
+    function checkComputer2() {
+        $("#option").attr("src", "computer.html")
+    }
+
+    function car2() {
+        layui.use("layer", function () {
+            layer.open({
+                type: 2,
+                title: "我的购物车",
+                shade: 0.5,
+                maxmin: true,
+                anim: 3,
+                area: ['1350px', '500px'],
+                content: "cart.html"
+            })
+        })
+    }
+
+    function showPeople2() {
+        layui.use("layer", function () {
+            layer.open({
+                type: 2,
+                title: "个人信息",
+                shade: 0.5,
+                maxmin: true,
+                anim: 3,
+                area: ['700px', '500px'],
+                content: "PeopleInfo.html"
+            })
+        })
+    }
+
+    function showProject() {
+        layui.use("layer", function () {
+            layer.open({
+                type: 2,
+                title: "店铺好货",
+                shade: 0.5,
+                maxmin: true,
+                anim: 3,
+                area: ['1350px', '500px'],
+                content: "showProjectInfo2.html"
+            })
+        })
+    }
+
+    function quit2() {
+        layui.use("layer", function () {
+            let layer = layui.layer
+            layer.msg("注销成功", {icon: 6}, function () {
+                sessionStorage.removeItem("id");
+                window.location.href = "login.html";
+            })
+        })
+    }
+</script>
+<script src="js/jquery-3.6.0.js"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>修改用户信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+</head>
+<body>
+<form class="layui-form">
+    <input hidden id="inp1" name="id">
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="font-family: 华文楷体,serif;font-size: 15px">用户名</label>
+        <div class="layui-input-block">
+            <input type="text" name="username" id="inp2" required lay-verify="required" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">性别</label>
+        <div class="layui-input-block">
+            <input type="radio" name="sex" value="男" title="男" checked>
+            <input type="radio" name="sex" value="女" title="女">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="font-family: 华文楷体,serif;font-size: 15px">用户密码</label>
+        <div class="layui-input-block">
+            <input type="text" name="password" id="inp4" required lay-verify="required"
+                   autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="font-family: 华文楷体,serif;font-size: 15px">电话</label>
+        <div class="layui-input-block">
+            <input type="text" name="phone" required id="inp5" lay-verify="required" maxlength="11"
+                   autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="font-family: 华文楷体,serif;font-size: 15px">电子邮箱</label>
+        <div class="layui-input-block">
+            <input type="text" name="email" required id="inp6" lay-verify="email" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="font-family: 华文楷体,serif;font-size: 15px">所在城市</label>
+        <div class="layui-input-block">
+            <input type="text" name="address" id="inp7" required lay-verify="required" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="font-family: 华文楷体,serif;font-size: 15px">选择权限</label>
+        <div class="layui-input-block">
+            <label>
+                <select name="Name" id="Name" lay-verify="required">
+                    <option value="用户" style="font-family: 华文楷体,serif;font-size: 15px" selected="selected">用户</option>
+                    <option value="商户" style="font-family: 华文楷体,serif;font-size: 15px">商户</option>
+                    <option value="超级管理员" style="font-family: 华文楷体,serif;font-size: 15px">超级管理员</option>
+
+                </select>
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">修改</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+</body>
+<script src="layui/layui.js"></script>
+<script>
+    layui.use(['form', 'layer'], function () {
+        let form = layui.form;
+        let layer = layui.layer;
+        let $ = layui.$
+        form.on('submit(formDemo)', function (data) {
+            let level;
+            let gender;
+            if (data.field.Name === '用户') {
+                level = 3
+            } else if (data.field.Name === '商户') {
+                level = 2
+            } else {
+                level = 1
+            }
+            if (data.field.sex === '男') {
+                gender = 1
+            } else {
+                gender = 2
+            }
+            layer.confirm("确定把权限改为" + data.field.Name, function () {
+                $.ajax({
+                    url: "/admin/updateUserInfo",
+                    data: {
+                        "id": data.field.id,
+                        "username": data.field.username,
+                        "password": data.field.password,
+                        "gender": gender,
+                        "phone": data.field.phone,
+                        "email": data.field.email,
+                        "address": data.field.address,
+                        "level": level,
+                    },
+                    type: "post",
+                    dataType: "json",
+                    success: function (result) {
+                        if (result.data != null) {
+                            layer.msg("更新成功", {icon: 1, offset: '100px'}, function () {
+                                let index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                                parent.location.reload();
+                            })
+                        } else {
+                            layer.msg("更新失败，请检查要更新的内容", {icon: 0, offset: '100px'})
+                        }
+                    }
+                })
+            })
+            return false;
+        });
+    });
+</script>
+</html>

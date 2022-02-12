@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns: xmlns:>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>用户信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+</head>
+<body>
+<div class="layui-fluid">
+    <fieldset class="table-search-fieldset" style="border: 0">
+        <legend style="display: none">搜索信息</legend>
+        <div style="margin: 10px 10px 10px 10px" id="btn">
+            <form class="layui-form layui-form-pane">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">查询用户名</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" name="keyword" id="demoReload" required lay-verify="required"
+                                   autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="button" class="layui-btn layui-btn-primary" lay-submit data-type="reload"
+                                lay-filter="data-search-btn"><i class="layui-icon layui-icon-search"></i> 搜 索
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+    <table class="layui-table layui-hide" id="testReload" lay-filter="user"></table>
+</div>
+<script type="text/html" id="Demo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit" style="margin-bottom: 10px;padding:0 5px">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"
+       style="margin-bottom: 10px;padding:0 5px">删除</a>
+</script>
+
+<script src="layui/layui.js"></script>
+<script>
+    layui.use(['table', 'layer'], function () {
+        let table = layui.table;
+        table.render({
+            elem: '#testReload'
+            , url: '/admin/all'
+            , method: "post"
+            , toolbar: 'default'
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: 'ID', width: 80, sort: true}
+                , {field: 'username', title: '用户名', width: 120}
+                , {
+                    field: 'sex.sexName', title: '性别', templet: function (data) {
+                        return data.sex.sexName;
+                    }, width: 80
+                }
+                , {field: 'password', title: '密码', width: 120}
+                , {field: 'phone', title: '电话', width: 135}
+                , {field: 'email', title: '电子邮箱', width: 175}
+                , {field: 'address', title: '城市', width: 80}
+                , {
+                    field: 'level.levelName', title: '权限', templet: function (data) {
+                        return data.levelName.name;
+                    }, width: 120
+                }
+                , {field: 'time', title: '注册时间', sort: true, width: 200}
+                , {field: 'center', title: '操作', width: 400, toolbar: "#Demo"}
+            ]]
+            , page: {
+                layout: ['prev', 'page', 'next', 'count', 'limit', 'refresh', 'skip'],
+                limit: 5,
+                limits: [5, 10, 15],
+                group: 10,
+                first: false,
+                last: false
+            }
+        });
+        table.on('toolbar(user)', function (obj) {
+            let checkStatus = table.checkStatus(obj.config.id)
+                , data = checkStatus.data;
+            switch (obj.event) {
+                case 'add':
+                    layer.open({
+                        type: 2,
+                        title: "注册新用户",
+                        shade: 0.5,
+                        maxmin: true,
+                        anim: 3,
+                        area: ['500px', '400px'],
+                        content: "register2.html",
+                    })
+                    break;
+                case 'update':
+                    if (data.length === 0) {
+                        layer.msg('请选择一行');
+                    } else if (data.length > 1) {
+                        layer.msg('只能同时编辑一个');
+                    } else {
+                        let id = checkStatus.data[0].id;
+                        console.log(id)
+                        $.post({
+                            url: "/admin/toUpdate",
+                            data: {"id": id},
+                            type: "post",
+                            success: function (user) {
+                                layer.open({
+                                    type: 2,
+                                    title: "修改用户信息",
+                                    shade: 0.5,
+                                    maxmin: true,
+                                    anim: 3,
+                                    area: ['400px', '500px'],
+                                    content: "UpdateUserInfo.html",
+                                    success: function (layero) {
+                                        let inp1 = $(layero).find("iframe").contents().find("#inp1");
+                                        let inp2 = $(layero).find("iframe").contents().find("#inp2");
+                                        let inp4 = $(layero).find("iframe").contents().find("#inp4");
+                                        let inp5 = $(layero).find("iframe").contents().find("#inp5");
+                                        let inp6 = $(layero).find("iframe").contents().find("#inp6");
+                                        let inp7 = $(layero).find("iframe").contents().find("#inp7");
+                                        inp1.val(user.id);
+                                        inp2.val(user.username);
+                                        inp4.val(user.password);
+                                        inp5.val(user.phone);
+                                        inp6.val(user.email);
+                                        inp7.val(user.address);
+                                    }
+                                })
+                            }
+                        })
+                    }
+                    break;
+                case 'delete':
+                    if (data.length === 0) {
+                        layer.msg('请选择一行');
+                    } else {
+                        layer.confirm("确认删除么？", function () {
+                            let id = checkStatus.data[0].id;
+                            $.post({
+                                url: "/admin/del",
+                                data: {"id": id},
+                                success: function () {
+                                    layer.msg("删除成功", {icon: 1});
+                                }
+                            })
+                            table.reload('testReload', {
+                                url: "/admin/all"
+                            })
+                        })
+                    }
+                    break;
+            }
+        })
+
+
+        let $ = layui.$,
+            active = {
+                reload: function () {
+                    let demoReload = $('#demoReload');
+                    table.reload('testReload', {
+                        url: "/admin/a1",
+                        methods: "post",
+                        page: {
+                            curr: 1
+                        },
+                        where: {
+                            username: demoReload.val()
+                        }
+                    });
+                }
+            };
+
+        $('#btn .layui-btn').on('click', function () {
+            let type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+
+
+    layui.use(['layer', 'table', 'form'], function () {
+        let layer = layui.layer;
+        let table = layui.table;
+        let $ = layui.$;
+        table.on('tool(user)', function (obj) {
+            let data = obj.data;
+            if (obj.event === 'edit') {
+                $.post({
+                    url: "/admin/toUpdate",
+                    data: {id: data.id},
+                    type: "post",
+                    success: function (user) {
+                        layer.open({
+                            type: 2,
+                            title: "修改用户信息",
+                            shade: 0.5,
+                            maxmin: true,
+                            anim: 3,
+                            area: ['500px', '300px'],
+                            content: "UpdateUserInfo.html",
+                            success: function (layero) {
+                                let inp1 = $(layero).find("iframe").contents().find("#inp1");
+                                let inp2 = $(layero).find("iframe").contents().find("#inp2");
+                                let inp4 = $(layero).find("iframe").contents().find("#inp4");
+                                let inp5 = $(layero).find("iframe").contents().find("#inp5");
+                                let inp6 = $(layero).find("iframe").contents().find("#inp6");
+                                let inp7 = $(layero).find("iframe").contents().find("#inp7");
+                                inp1.val(user.id);
+                                inp2.val(user.username);
+                                inp4.val(user.password);
+                                inp5.val(user.phone);
+                                inp6.val(user.email);
+                                inp7.val(user.address);
+                            }
+                        })
+
+                    }
+                })
+
+            } else if (obj.event === 'del') {
+                layer.confirm("确认要删除吗？", function () {
+                    $.post({
+                        url: "/admin/del",
+                        data: {"id": data.id},
+                        success: function (map) {
+                            let message = map.message;
+                            layer.msg(message, {icon: 1});
+                        }
+                    })
+                    table.reload('testReload', {
+                        url: "/admin/all"
+                    })
+                })
+            }
+        })
+    })
+</script>
+</body>
+</html>

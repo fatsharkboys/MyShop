@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>商品添加</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+    <style type="text/css">
+        .Register {
+            width: 480px;
+            height: 320px;
+            min-height: 320px;
+            max-height: 320px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form">
+    <div class="Register">
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品名</label>
+            <div class="layui-input-block">
+                <input type="text" name="projectName" lay-verify="required" placeholder="请输入商品名" autocomplete="off"
+                       class="layui-input"
+                       required>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="font-family: 华文楷体,serif;font-size: 20px">种类</label>
+            <div class="layui-input-block">
+                <input type="radio" name="projectKind" value="手机类" title="手机类">
+                <input type="radio" name="projectKind" value="电脑类" title="电脑类">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品价格</label>
+            <div class="layui-input-block">
+                <input type="text" name="projectPrice" lay-verify="required" placeholder="请输入价格" autocomplete="off"
+                       maxlength="4"
+                       class="layui-input"
+                       required>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label" style="font-family: 华文楷体,serif;font-size: 20px">商品描述</label>
+            <div class="layui-input-block">
+                <textarea name="projectInfo" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-filter="formDemo" lay-submit>添加</button>
+                <button type="reset" class="layui-btn layui-btn-primary layui-bg-red">重置</button>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="layui/layui.js"></script>
+<script>
+    layui.use(['form', "layer"], function () {
+        let form = layui.form;
+        let layer = layui.layer;
+        let $ = layui.$;
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            $.ajax({
+                url: "/project/addProject",
+                data: {
+                    "id": sessionStorage.getItem("id"),
+                    "projectName": data.field.projectName,
+                    "projectKind": data.field.projectKind,
+                    "projectPrice": data.field.projectPrice,
+                    "projectInfo": data.field.projectInfo
+                },
+                type: "post",
+                success: function (map) {
+                    if (map.data != null) {
+                        layer.msg("添加成功", {icon: 6}, function () {
+                            let index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            parent.location.reload();
+                        })
+                    } else {
+                        layer.msg("添加失败，请重试", {icon: 5})
+                    }
+                }
+            })
+            return false;
+        });
+    });
+</script>
+<script src="js/jquery-3.6.0.js"></script>
+</body>
+</html>

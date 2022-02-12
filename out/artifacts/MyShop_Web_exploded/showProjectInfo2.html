@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns: xmlns:>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>商品信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+</head>
+<body>
+<div class="layui-fluid">
+    <fieldset class="table-search-fieldset" style="border: 0">
+        <legend style="display: none">搜索信息</legend>
+        <div style="margin: 10px 10px 10px 10px" id="btn">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商品名</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" name="keyword" id="demoReload" required lay-verify="required"
+                                   autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="button" class="layui-btn layui-btn-primary" lay-submit data-type="reload"
+                                lay-filter="data-search-btn"><i class="layui-icon layui-icon-search"></i> 搜 索
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </fieldset>
+    <table class="layui-table layui-hide" id="testReload" lay-filter="project"></table>
+</div>
+<script type="text/html" id="Demo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit" style="margin-bottom: 10px;padding:0 5px">修改货物信息</a>
+    <a class="layui-btn layui-bg-blue layui-btn-xs" lay-event="del"
+       style="margin-bottom: 10px;padding:0 5px">删除商品</a>
+</script>
+
+<script src="layui/layui.js"></script>
+<script>
+    layui.use(['table', 'layer'], function () {
+        let table = layui.table;
+        let id = sessionStorage.getItem("id");
+        console.log(id);
+        table.render({
+            elem: '#testReload'
+            , url: '/project/queryLocalProject?id=' + id
+            , method: "post"
+            , toolbar: 'default'
+            , cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                , {field: 'id', title: 'ID', width: 160, sort: true,}
+                , {field: 'projectName', title: '商品名', width: 160}
+                , {field: 'projectKind', title: '商品种类', width: 160}
+                , {field: 'projectPrice', title: '价格', width: 160}
+                , {field: 'projectInfo', title: '描述', width: 320}
+                , {field: 'center', title: '操作', width: 300, toolbar: "#Demo"}
+            ]],
+            page: {
+                layout: ['prev', 'page', 'next', 'count', 'limit', 'refresh', 'skip'],
+                limit: 10,
+                limits: [5, 10, 15],
+                group: 10,
+                first: false,
+                last: false
+            }
+        });
+
+        table.on('toolbar(project)', function (obj) {
+            let checkStatus = table.checkStatus(obj.config.id)
+                , data = checkStatus.data;
+            switch (obj.event) {
+                case 'add':
+                    layer.open({
+                        type: 2,
+                        title: "添加商品",
+                        shade: 0.5,
+                        maxmin: true,
+                        anim: 3,
+                        area: ['500px', '400px'],
+                        content: "addProject.html",
+                    })
+                    break;
+                case 'update':
+                    if (data.length === 0) {
+                        layer.msg('请选择一行');
+                    } else if (data.length > 1) {
+                        layer.msg('只能同时编辑一个');
+                    } else {
+                        let id = checkStatus.data[0].id;
+                        $.post({
+                            url: "/admin/toUpdateProject",
+                            data: {"id": id},
+                            type: "post",
+                            success: function (project) {
+                                layer.open({
+                                    type: 2,
+                                    title: "修改商品信息",
+                                    shade: 0.5,
+                                    maxmin: true,
+                                    anim: 3,
+                                    area: ['500px', '300px'],
+                                    content: "UpdateProjectInfo.html",
+                                    success: function (layero) {
+                                        let inp1 = $(layero).find("iframe").contents().find("#inp1");
+                                        let inp2 = $(layero).find("iframe").contents().find("#inp2");
+                                        let inp3 = $(layero).find("iframe").contents().find("#inp3");
+                                        let inp4 = $(layero).find("iframe").contents().find("#inp4");
+                                        let inp5 = $(layero).find("iframe").contents().find("#inp5");
+                                        let inp6 = $(layero).find("iframe").contents().find("#inp6");
+                                        inp1.val(project.id);
+                                        inp2.val(project.projectName);
+                                        inp3.val(project.projectKind);
+                                        inp4.val(project.projectPrice);
+                                        inp5.val(project.projectInfo);
+                                        inp6.val(project.projectID);
+                                    }
+                                })
+                            }
+                        })
+                    }
+                    break;
+                case 'delete':
+                    if (data.length === 0) {
+                        layer.msg('请选择一行');
+                    } else {
+                        layer.confirm("确认删除该商品么？", function () {
+                            let id = checkStatus.data[0].id;
+                            $.post({
+                                url: "/admin/delProject",
+                                data: {"id": id},
+                                success: function () {
+                                    layer.msg("删除成功", {icon: 1})
+                                }
+                            })
+                            table.reload('testReload', {
+                                url: "/project/queryLocalProject?id=" + sessionStorage.getItem("id")
+                            })
+                        })
+                    }
+                    break;
+            }
+        })
+
+        let $ = layui.$,
+            active = {
+                reload: function () {
+                    let demoReload = $('#demoReload');
+                    table.reload('testReload', {
+                        url: "/project/queryByProjectName",
+                        methods: "post",
+                        page: {
+                            curr: 1
+                        },
+                        where: {
+                            projectName: demoReload.val()
+                        }
+                    });
+                }
+            };
+
+        $('#btn .layui-btn').on('click', function () {
+            let type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+
+
+    layui.use(['layer', 'table', 'form'], function () {
+        let layer = layui.layer;
+        let table = layui.table;
+        let $ = layui.$;
+        table.on('tool(project)', function (obj) {
+            let data = obj.data;
+            if (obj.event === 'edit') {
+                $.post({
+                    url: "/admin/toUpdateProject",
+                    data: {"id": data.id},
+                    type: "post",
+                    success: function (project) {
+                        layer.open({
+                            type: 2,
+                            title: "修改商品信息",
+                            shade: 0.5,
+                            maxmin: true,
+                            anim: 3,
+                            area: ['500px', '300px'],
+                            content: "UpdateProjectInfo.html",
+                            success: function (layero) {
+                                let inp1 = $(layero).find("iframe").contents().find("#inp1");
+                                let inp2 = $(layero).find("iframe").contents().find("#inp2");
+                                let inp3 = $(layero).find("iframe").contents().find("#inp3");
+                                let inp4 = $(layero).find("iframe").contents().find("#inp4");
+                                let inp5 = $(layero).find("iframe").contents().find("#inp5");
+                                let inp6 = $(layero).find("iframe").contents().find("#inp6");
+                                inp1.val(project.id);
+                                inp2.val(project.projectName);
+                                inp3.val(project.projectKind);
+                                inp4.val(project.projectPrice);
+                                inp5.val(project.projectInfo);
+                                inp6.val(project.projectID);
+                            }
+                        })
+
+                    }
+                })
+            } else if (obj.event === 'del') {
+                layer.confirm("确认删除该商品么？", function () {
+                    $.post({
+                        url: "/project/delProject",
+                        data: {"id": data.id},
+                        success: function () {
+                            layer.msg("删除成功", {icon: 1})
+                        }
+                    })
+                })
+            }
+        })
+        table.reload('testReload', {
+            url: "/project/queryLocalProject?id=" + sessionStorage.getItem("id")
+        })
+    })
+</script>
+</body>
+</html>

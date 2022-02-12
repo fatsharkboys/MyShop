@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>二手交易市场</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+    <style type="text/css">
+        body {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="main.html">交易市场</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="main.html">首页</a></li>
+                <li><a href="javascript:checkPhone()">手机类</a></li>
+                <li><a href="javascript:checkComputer()">电脑类</a></li>
+            </ul>
+            <ul class="nav navbar-nav" style="float: right;">
+                <li><a href="login.html">登录</a></li>
+                <li><a href="register.html">注册</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="row" style="width: 100%;height: 800px">
+    <div  class="col-sm-12" style="width: 100%;height: 100%">
+        <iframe id="option" name="option" style="overflow: visible;" scrolling="no"
+                width="100%" height="100%" src="main4.html"></iframe>
+    </div>
+</div>
+
+<div class="text-center" style="margin-bottom:0;background-color: #2D93CA">
+    <p>鲨鱼出品，必属精品</p>
+</div>
+<script src="layui/layui.js"></script>
+<script>
+    function checkPhone() {
+        $("#option").attr("src", "phone.html")
+    }
+
+    function checkComputer() {
+        $("#option").attr("src","computer.html")
+    }
+</script>
+<script src="js/jquery-3.6.0.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>修改用户信息</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+</head>
+<body>
+<form class="layui-form">
+    <div class="layui-form-item">
+        <input type="text" hidden name="id" id="inp3">
+        <label class="layui-form-label" style="font-family: 华文楷体,serif;font-size: 20px">店铺名</label>
+        <div class="layui-input-block">
+            <input type="text" name="shopName" required lay-verify="required" id="inp1" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="font-family: 华文楷体,serif;font-size: 20px">所在城市</label>
+        <div class="layui-input-block">
+            <input type="text" name="shopAddress" required lay-verify="required" id="inp2" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" type="button" onclick="updateShopInfo()">修改</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+</body>
+<script src="layui/layui.js"></script>
+<script>
+    function updateShopInfo() {
+        let $ = layui.$;
+        let id = document.getElementById("inp3").value
+        let shopName = document.getElementById("inp1").value
+        let shopAddress = document.getElementById("inp2").value
+        $.post({
+            url: "/admin/updateShopInfo",
+            data: {
+                "id": id,
+                "shopName": shopName,
+                "shopAddress": shopAddress,
+            },
+            dataType: "json",
+            success: function (map) {
+                if (map.data != null) {
+                    layui.use("layer", function () {
+                        let layer = layui.layer;
+                        layer.msg("修改成功", {icon: 1, offset: '100px', time: 1000}, function () {
+                            let index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                            window.parent.location.reload();
+                        })
+                    })
+                } else {
+                    layui.use("layer", function () {
+                        let layer = layui.layer;
+                        layer.msg("修改失败，请检查内容", {icon: 0, offset: '100px', time: 1000})
+                    })
+                }
+            }
+        })
+    }
+</script>
+</html>

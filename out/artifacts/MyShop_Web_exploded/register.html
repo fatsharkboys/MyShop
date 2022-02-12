@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>个人注册</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+    <style type="text/css">
+        body {
+            background-image: url("img/pexels-mateusz-dach-450035.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .Register {
+            width: 480px;
+            height: 320px;
+            min-height: 320px;
+            max-height: 320px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 130;
+            background-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 3px 18px rgba(100, 0, 0, .5);
+            font-size: 16px;
+        }
+
+        .layui-input-block {
+            margin-top: 15px;
+            width: 400px;
+            height: 40px;
+            font-size: 15px;
+        }
+
+        .layui-form-item {
+            margin-top: 5px;
+            margin-left: -40px;
+        }
+
+    </style>
+</head>
+<body>
+<form class="layui-form">
+    <div class="Register">
+        <div class="layui-form-item">
+            <h2 align="center" style="font-family: 华文楷体,serif">用户注册</h2>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" lay-verify="required" placeholder="请输入用户名" autocomplete="off"
+                       class="layui-input"
+                       required>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="password" lay-verify="required" placeholder="请输入密码"
+                       autocomplete="off"
+                       class="layui-input"
+                       required>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone" lay-verify="phone" placeholder="请输入电话" autocomplete="off"
+                       class="layui-input"
+                       required>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="address" placeholder="请输入地址信息" autocomplete="off" lay-verify="required"
+                       class="layui-input"
+                       required>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-filter="formDemo" lay-submit>注册</button>
+                <button type="reset" class="layui-btn layui-btn-primary layui-bg-red">重置</button>
+                <button class="layui-btn layui-btn-primary layui-bg-blue" type="button" id="btn2" onclick="f2()">
+                    已有账户,立即登录
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="layui/layui.js"></script>
+<script>
+    layui.use(['form', "layer"], function () {
+        let form = layui.form;
+        let layer = layui.layer;
+        let $ = layui.$;
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            $.ajax({
+                url: "/user/adduser",
+                data: {
+                    "username": data.field.username,
+                    "password": data.field.password,
+                    "phone": data.field.phone,
+                    "address": data.field.address
+                },
+                type: "post",
+                success: function (map) {
+                    if (map.data != null) {
+                        layer.msg("注册成功", {icon: 6, offset: "100px"}, function () {
+                            window.location.href = "login.html"
+                        })
+                    } else {
+                        layer.msg("注册失败,检查注册信息", {icon: 5})
+                    }
+                }
+            })
+            return false;
+        });
+    });
+
+    function f2() {
+        window.location.href = "login.html"
+    }
+</script>
+</body>
+</html>

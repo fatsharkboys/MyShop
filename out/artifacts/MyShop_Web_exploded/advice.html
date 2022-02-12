@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>公告</title>
+    <link rel="stylesheet" type="text/css" href="layui/css/layui.css"/>
+</head>
+<body>
+<form class="layui-form"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+    <div class="layui-form-item">
+        <p>在学习Java的过程中我得出这样的结论：</p><br>
+        <p>1.学习中，要养成良好的习惯（写括号时要成对，字母大小写要区分，单词拼写要准确）。</p><br>
+        <p>2．在学习的过程中，最好不是仅仅停留在java表层，不是抄书上的例子运行出结果就可以。要注意，即便对一个简单的例子也要有耐心去琢磨、调试、改动。</p><br>
+        <p>3．在学习的过程中一定要动手做、试着写代码，而不是抱一本书看看就行。很多东西和体会必须自己动手才能真正属于自己。</p><br>
+        <p> 4. 在 Java 的学习过程中，可能会遇到形形色色的问题不容易解决，应多去专业论坛了解相关的知识，书本上的知识有限。要会从网上搜索有用的信息 加以整理，促进学习的深入和知识水平的提高。</p><br>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" id="btn" onclick="f10()" style="float: right">我已确认</button>
+        </div>
+    </div>
+</form>
+
+
+<script src="layui/layui.js"></script>
+<script>
+    function f10() {
+        layui.use("layer", function () {
+            let layer = layui.layer
+            let index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+            parent.location.reload();
+        })
+    }
+</script>
+<script src="js/jquery-3.6.0.js"></script>
+</body>
+</html>
